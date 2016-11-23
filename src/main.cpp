@@ -2,11 +2,11 @@
 #include <signal.h>
 #include <string.h>
 
+#include "config.h"
+#include "Net/TCPConnection.h"
 #include "Net/TCPServer.h"
 
 using namespace std;
-
-#define PORT "8081"  // the port users will be connecting to
 
 #define BACKLOG 10     // how many pending connections queue will hold
 
@@ -27,8 +27,16 @@ int main(int argc, char** argv)
         return 1;
     }
 
-    hlt::TCPServer server(string(PORT));
-    server.start();
+    hlt::TCPServer clientServer(string(CLIENT_PORT));
+    clientServer.start();
+    hlt::TCPServer spServer(string(SP_PORT));
+    spServer.start();
+
+    while (1) {
+        string in;
+        cin >> in;
+        // Possible UI here
+    }
 
     return 0;
 }

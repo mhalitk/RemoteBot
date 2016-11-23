@@ -41,7 +41,11 @@ private:
     string port;
     struct addrinfo hints;
 
+    int socketFd;
+
+    std::thread* servingThread;
     std::thread* connectionCleaner;
+
     vector<shared_ptr<TCPConnection>> connections;
 };
 
