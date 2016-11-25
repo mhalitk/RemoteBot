@@ -22,23 +22,19 @@ TCPConnection::~TCPConnection() {
 
 void TCPConnection::start() {
     running = true;
-    sendingThread = new std::thread([this](){ this->startSending(); });
-    receivingThread = new std::thread([this](){ this->startReceiving(); });
+    sendingThread = make_shared<std::thread>([this](){ this->startSending(); });
+    receivingThread = make_shared<std::thread>([this](){ this->startReceiving(); });
 }
 
 void TCPConnection::stop() {
     running = false;
     close(connectionDescriptor);
 
-    if (sendingThread != nullptr) {
+    if (sendingThread != nullptr)
         sendingThread->join();
-        delete sendingThread;
-    }
 
-    if (receivingThread != nullptr) {
+    if (receivingThread != nullptr)
         receivingThread->join();
-        delete receivingThread;
-    }
 }
 
 void TCPConnection::sendMessage(const std::string& message) {
@@ -76,7 +72,7 @@ void TCPConnection::startSending() {
 }
 
 void TCPConnection::startReceiving() {
-    char* buffer = new char[1024];
+    char buffer[1024];
     int recvFlags = 0;
 
     while (running) {

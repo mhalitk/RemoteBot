@@ -8,17 +8,12 @@
 
 using namespace std;
 
-#define BACKLOG 10     // how many pending connections queue will hold
-
 static void signalHandler(int signum) {
-    
+    // TODO Handle signals
 }
 
 int main(int argc, char** argv)
 {
-    struct addrinfo hints, *servinfo, *p;
-    int rv;
-
     struct sigaction sa;
     sa.sa_handler = signalHandler;
     sigemptyset(&sa.sa_mask);
@@ -31,8 +26,6 @@ int main(int argc, char** argv)
     clientServer.getEventEmitter().on("connection", 
             [](const hlt::TCPServer::EventArgument& arg) {
                 cout << "New connection to client server!" << endl;
-                
-                hlt::TCPConnection::Ptr connection = arg.connection;
             });
     clientServer.start();
     hlt::TCPServer spServer(string(SP_PORT));

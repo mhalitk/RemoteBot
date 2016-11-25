@@ -1,5 +1,5 @@
-#ifndef __HLT_UTILS_EVENTEMITTER_H__
-#define __HLT_UTILS_EVENTEMITTER_H__
+#ifndef __HLT_EVENTEMITTER_HPP__
+#define __HLT_EVENTEMITTER_HPP__
 
 #include <iostream>
 #include <map>

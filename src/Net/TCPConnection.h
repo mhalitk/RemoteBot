@@ -1,5 +1,5 @@
-#ifndef __HLT_NET_TCPCLIENT_H__
-#define __HLT_NET_TCPCLIENT_H__
+#ifndef __HLT_NET_TCPCONNECTION_H__
+#define __HLT_NET_TCPCONNECTION_H__
 
 #include <functional>
 #include <map>
@@ -73,8 +73,8 @@ private:
     int connectionDescriptor = -1;
     bool running = false;
 
-    std::thread* sendingThread;
-    std::thread* receivingThread;
+    std::shared_ptr<std::thread> sendingThread;
+    std::shared_ptr<std::thread> receivingThread;
 
     std::map<Event, std::vector<EventHandler>> handlers;
     ThreadSafeQueue<std::string> sendingQueue;
