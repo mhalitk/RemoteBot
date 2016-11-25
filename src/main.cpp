@@ -28,8 +28,18 @@ int main(int argc, char** argv)
     }
 
     hlt::TCPServer clientServer(string(CLIENT_PORT));
+    clientServer.getEventEmitter().on("connection", 
+            [](const hlt::TCPServer::EventArgument& arg) {
+                cout << "New connection to client server!" << endl;
+                
+                hlt::TCPConnection::Ptr connection = arg.connection;
+            });
     clientServer.start();
     hlt::TCPServer spServer(string(SP_PORT));
+    spServer.getEventEmitter().on("connection", 
+            [](const hlt::TCPServer::EventArgument& arg) {
+                cout << "New connection to service provider server!" << endl;
+            });
     spServer.start();
 
     while (1) {

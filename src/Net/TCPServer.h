@@ -1,6 +1,7 @@
 #ifndef __HLT_TCPSERVER_SERVER_H__
 #define __HLT_TCPSERVER_SERVER_H__
 
+#include <exception>
 #include <memory>
 #include <netdb.h>
 #include <sys/socket.h>
@@ -9,6 +10,7 @@
 #include <thread>
 #include <vector>
 
+#include "EventEmitter.hpp"
 #include "TCPConnection.h"
 
 using std::shared_ptr;
@@ -21,6 +23,12 @@ namespace hlt {
 
 class TCPServer {
 public:
+    struct EventArgument {
+        TCPConnection::Ptr connection;
+        string message;
+        ~EventArgument(){}
+    };
+
     /**
      *  Constructor, sets configurations for socket
      */
@@ -36,7 +44,16 @@ public:
      */
     void stop();
 
+    /**
+     * Returns event emitter of server so that users of server class
+     * can add handler for events 
+     * 
+     * @return Event emitter object
+     */
+    EventEmitter<EventArgument>& getEventEmitter();
 private:
+    struct addrinfo* createSocket(struct addrinfo* serverInfo);
+
     bool running;
     string port;
     struct addrinfo hints;
@@ -46,7 +63,16 @@ private:
     std::thread* servingThread;
     std::thread* connectionCleaner;
 
-    vector<shared_ptr<TCPConnection>> connections;
+    vector<TCPConnection::Ptr> connections;
+    EventEmitter<EventArgument> eventEmitter;
+};
+
+class TCPServerException : public std::exception {
+public:
+    TCPServerException(std::string message) : message(message) {}
+    std::string what() { return message; }
+private:
+    std::string message;
 };
 
 }

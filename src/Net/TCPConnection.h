@@ -23,6 +23,7 @@ class TCPConnection {
 public:
     typedef std::string EventArgument;
     typedef std::function<void(EventArgument)> EventHandler;
+    typedef std::shared_ptr<TCPConnection> Ptr;
 
     enum Event {
         ON_MESSAGE,

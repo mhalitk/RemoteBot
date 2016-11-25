@@ -1,15 +1,8 @@
-#include <errno.h>
-#include <stdlib.h>
-#include <signal.h>
-#include <unistd.h>
 #include <arpa/inet.h>
-#include <netinet/in.h>
+#include <exception>
+#include <unistd.h>
+
 #include "TCPServer.h"
-
-#include <iostream>
-
-using std::cout;
-using std::endl;
 
 namespace hlt {
 
@@ -49,51 +42,25 @@ void TCPServer::start() {
                             this->connections.begin() + toRemove[i]);
             }
         });
-    int returnValue = -1;
-    struct addrinfo *serverInfo, *p;
-    int yes=1;
 
-    if ((returnValue = getaddrinfo(NULL, port.c_str(), &hints, &serverInfo)) != 0) {
-        fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(returnValue));
-        return;
+    struct addrinfo* serverInfo;
+    if (getaddrinfo(NULL, port.c_str(), &hints, &serverInfo) != 0) {
+        throw TCPServerException("Failed to get address info");
     }
-
 
     int new_fd;
-    for(p = serverInfo; p != NULL; p = p->ai_next) {
-        // Create socket
-        if ((socketFd = socket(p->ai_family, p->ai_socktype,
-                p->ai_protocol)) == -1) {
-            continue;
-        }
-
-        if (setsockopt(socketFd, SOL_SOCKET, SO_REUSEADDR, &yes,
-                sizeof(int)) == -1) {
-            freeaddrinfo(serverInfo);
-            return;
-        }
-
-        if (bind(socketFd, p->ai_addr, p->ai_addrlen) == -1) {
-            close(socketFd);
-            continue;
-        }
-
-        break;
-    }
-
-    freeaddrinfo(serverInfo); // all done with this structure
-
-    if (p == NULL)  {
-        cout << "server: failed to bind\n";
-        return;
+    struct addrinfo *p = createSocket(serverInfo);
+    freeaddrinfo(serverInfo);
+    if (p == NULL) {
+        throw TCPServerException("Couldn't create socket");
     }
 
     if (listen(socketFd, BACKLOG) == -1) {
-        perror("listen");
-        return;
+        throw TCPServerException("Failed to listen socket");
     }
 
-    printf("server: waiting for connections...\n");
+    string eventMessage = "Server is up on port " + port;
+    eventEmitter.emit("open", {NULL, eventMessage});
 
     servingThread = new std::thread([this](){
             char s[INET6_ADDRSTRLEN];
@@ -110,17 +77,14 @@ void TCPServer::start() {
                 inet_ntop(their_addr.ss_family,
                     get_in_addr((struct sockaddr *)&their_addr),
                     s, sizeof s);
-                printf("server: got connection from %s\n", s);
 
-                shared_ptr<TCPConnection> connection = 
-                    std::make_shared<TCPConnection>(new_fd);
+                TCPConnection::Ptr connection(new TCPConnection(new_fd));
                 this->connections.push_back(connection);
-                connection->setEventHandler(TCPConnection::Event::ON_MESSAGE,
-                        [s](TCPConnection::EventArgument message) {
-                            cout << "Received message from [" << s << "]: "
-                                 << message << endl;
-                        });
                 connection->start();
+
+                EventArgument arg;
+                arg.connection = connection;
+                eventEmitter.emit("connection", arg);
             }
         });
 }
@@ -132,6 +96,37 @@ void TCPServer::stop() {
         connections[i]->stop();
     }
     servingThread->join();
+}
+
+EventEmitter<TCPServer::EventArgument>& TCPServer::getEventEmitter() {
+    return this->eventEmitter;
+}
+
+struct addrinfo* TCPServer::createSocket(struct addrinfo* serverInfo) {
+    struct addrinfo *p;
+    for(p = serverInfo; p != NULL; p = p->ai_next) {
+        // Create socket
+        if ((socketFd = socket(p->ai_family, p->ai_socktype,
+                p->ai_protocol)) == -1) {
+            continue;
+        }
+
+        int yes = 1;
+        if (setsockopt(socketFd, SOL_SOCKET, SO_REUSEADDR, &yes,
+                sizeof(int)) == -1) {
+            freeaddrinfo(serverInfo);
+            close(socketFd);
+            throw TCPServerException("Failed to set socket option SO_REUSEADDR");
+        }
+
+        if (bind(socketFd, p->ai_addr, p->ai_addrlen) == -1) {
+            close(socketFd);
+            continue;
+        }
+
+        break;
+    }
+    return p;
 }
 
 }
