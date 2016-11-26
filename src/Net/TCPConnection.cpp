@@ -41,8 +41,8 @@ void TCPConnection::sendMessage(const std::string& message) {
     sendingQueue.push(message);
 }
 
-void TCPConnection::setEventHandler(Event event, EventHandler handler) {
-    this->handlers[event].push_back(handler);
+EventEmitter<TCPConnection::EventArgument>& TCPConnection::getEventEmitter() {
+    return this->eventEmitter;
 }
 
 bool TCPConnection::isRunning() {
@@ -83,10 +83,7 @@ void TCPConnection::startReceiving() {
         }
         buffer[receivedLength] = '\0';
 
-        // Run on message handlers
-        for(int i = 0; i < this->handlers[Event::ON_MESSAGE].size(); i++) {
-            this->handlers[Event::ON_MESSAGE][i](EventArgument(buffer));
-        }
+        eventEmitter.emit("message", EventArgument(buffer));
     }
 
     running = false;

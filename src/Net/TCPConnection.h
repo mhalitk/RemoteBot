@@ -5,9 +5,9 @@
 #include <map>
 #include <string>
 #include <thread>
-#include <vector>
 
 #include "Containers/ThreadSafeQueue.h"
+#include "EventEmitter.hpp"
 
 namespace hlt {
 
@@ -24,12 +24,7 @@ public:
     typedef std::string EventArgument;
     typedef std::function<void(EventArgument)> EventHandler;
     typedef std::shared_ptr<TCPConnection> Ptr;
-
-    enum Event {
-        ON_MESSAGE,
-        ON_CLOSE
-    };
-    
+ 
     /**
      * Constructor, sets socket descriptor
      */
@@ -51,15 +46,13 @@ public:
      * @param message Message to send
      */
     void sendMessage(const std::string& message);
-    /**
-     * Sets event handler for specific event. Events are defined in TCPConnection::Event
-     * enum.
-     *
-     * @param event Target event of handler
-     * @param handler Handler function for event
-     */
-    void setEventHandler(TCPConnection::Event event, EventHandler handler);
 
+    /**
+     * Returns event emitter object
+     *
+     * @return Event emitter
+     */
+    EventEmitter<EventArgument>& getEventEmitter();
     /**
      * Returns running state of connection
      *
@@ -76,7 +69,7 @@ private:
     std::shared_ptr<std::thread> sendingThread;
     std::shared_ptr<std::thread> receivingThread;
 
-    std::map<Event, std::vector<EventHandler>> handlers;
+    EventEmitter<EventArgument> eventEmitter;
     ThreadSafeQueue<std::string> sendingQueue;
 };
 
