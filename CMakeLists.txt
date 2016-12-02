@@ -11,6 +11,8 @@ set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -std=c++14)
 include_directories(include)
 include_directories(src)
 
+link_directories("${PROJECT_SOURCE_DIR}/libs")
+
 # Server
 
 add_source(SERVER_SRC src/server.cpp)
@@ -27,3 +29,10 @@ add_executable(server ${SERVER_SRC})
 add_source(CLIENT_SRC src/client.cpp)
 
 add_executable(client ${CLIENT_SRC})
+
+# Test
+
+add_source(TEST_SRC test/test.cpp)
+
+add_executable(test ${TEST_SRC})
+target_link_libraries(test gtest)
