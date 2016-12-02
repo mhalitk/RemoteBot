@@ -66,8 +66,8 @@ private:
     int connectionDescriptor = -1;
     bool running = false;
 
-    std::shared_ptr<std::thread> sendingThread;
-    std::shared_ptr<std::thread> receivingThread;
+    std::thread* sendingThread;
+    std::thread* receivingThread;
 
     EventEmitter<EventArgument> eventEmitter;
     ThreadSafeQueue<std::string> sendingQueue;

@@ -2,6 +2,7 @@
 #define __HLT_EVENTEMITTER_HPP__
 
 #include <iostream>
+#include <future>
 #include <map>
 #include <vector>
 
@@ -16,22 +17,31 @@ public:
     
     void on(std::string eventName, EventCallback callback) {
         if (eventMap.find(eventName) == eventMap.end())
-            eventMap[eventName] = new std::vector<EventCallback>;
+            eventMap[eventName] = std::make_shared<std::vector<EventCallback>>();
         eventMap[eventName]->push_back(callback); 
     }
 
     void emit(std::string eventName, const T& eventArgument) {
-        if (eventMap.find(eventName) != eventMap.end()) {
-            for (auto callback = eventMap[eventName]->begin();
-                    callback != eventMap[eventName]->end();
-                    callback++) {
-                (*callback)(eventArgument);
+        try {
+            if (eventMap.find(eventName) != eventMap.end()) {
+                std::shared_ptr<std::vector<EventCallback>> callbacks = eventMap[eventName];
+                for (auto callback = callbacks->begin();
+                        callback != callbacks->end();
+                        callback++) {
+                    (*callback)(eventArgument);
+                }
             }
+        } catch (...) {
+            // Do nothing
         }
     }
 
+    void clearAll() {
+        eventMap.clear();
+    }
+
 private:
-    std::map<std::string, std::vector<EventCallback>*> eventMap;
+    std::map<std::string, std::shared_ptr<std::vector<EventCallback>>> eventMap;
 };
 
 }

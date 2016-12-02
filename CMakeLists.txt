@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 project(remote-bot-server)
-
+set(CMAKE_BUILD_TYPE Debug)
 
 macro (add_source to source)
     set (${to} ${${to}} ${source})
@@ -14,8 +14,9 @@ include_directories(src)
 # Server
 
 add_source(SERVER_SRC src/server.cpp)
+add_source(SERVER_SRC src/BotHandler.cpp)
+add_source(SERVER_SRC src/BotService.cpp)
 add_source(SERVER_SRC src/ClientHandler.cpp)
-add_source(SERVER_SRC src/ServiceProviderHandler.cpp)
 add_source(SERVER_SRC src/Net/TCPServer.cpp)
 add_source(SERVER_SRC src/Net/TCPConnection.cpp)
 

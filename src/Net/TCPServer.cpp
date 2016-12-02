@@ -30,18 +30,18 @@ TCPServer::~TCPServer() {
 void TCPServer::start() {
     running = true;
 
-    connectionCleaner = new std::thread([this](){
-            while (running) {
-                std::this_thread::sleep_for(std::chrono::seconds(5));
-                vector<int> toRemove;
-                for (int i = 0; i < connections.size(); i++)
-                    if (this->connections[i]->isRunning() == false)
-                        toRemove.push_back(i);
-                for (int i = 0; i < toRemove.size(); i++)
-                    this->connections.erase(
-                            this->connections.begin() + toRemove[i]);
-            }
-        });
+    // connectionCleaner = new std::thread([this](){
+    //         while (running) {
+    //             std::this_thread::sleep_for(std::chrono::seconds(5));
+    //             vector<int> toRemove;
+    //             for (int i = 0; i < connections.size(); i++)
+    //                 if (this->connections[i]->isRunning() == false)
+    //                     toRemove.push_back(i);
+    //             for (int i = 0; i < toRemove.size(); i++)
+    //                 this->connections.erase(
+    //                         this->connections.begin() + toRemove[i]);
+    //         }
+    //     });
 
     struct addrinfo* serverInfo;
     if (getaddrinfo(NULL, port.c_str(), &hints, &serverInfo) != 0) {
@@ -79,7 +79,7 @@ void TCPServer::start() {
                     s, sizeof s);
 
                 TCPConnection::Ptr connection(new TCPConnection(new_fd));
-                this->connections.push_back(connection);
+                // this->connections.push_back(connection);
                 connection->start();
 
                 EventArgument arg;

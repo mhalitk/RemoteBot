@@ -1,4 +1,5 @@
 #include <cerrno>
+#include <poll.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -15,6 +16,7 @@ TCPConnection::TCPConnection(int connectionDescriptor):
 }
 
 TCPConnection::~TCPConnection() {
+    cout << "Destroying TCPConnection" << endl;
     if (isRunning()) {
         stop();
     }
@@ -22,19 +24,21 @@ TCPConnection::~TCPConnection() {
 
 void TCPConnection::start() {
     running = true;
-    sendingThread = make_shared<std::thread>([this](){ this->startSending(); });
-    receivingThread = make_shared<std::thread>([this](){ this->startReceiving(); });
+    sendingThread = new std::thread([this](){ this->startSending(); });
+    receivingThread = new std::thread([this](){ this->startReceiving(); });
 }
 
 void TCPConnection::stop() {
     running = false;
-    close(connectionDescriptor);
 
     if (sendingThread != nullptr)
         sendingThread->join();
 
     if (receivingThread != nullptr)
         receivingThread->join();
+
+    close(connectionDescriptor);
+    eventEmitter.clearAll();
 }
 
 void TCPConnection::sendMessage(const std::string& message) {
@@ -75,7 +79,16 @@ void TCPConnection::startReceiving() {
     char buffer[1024];
     int recvFlags = 0;
 
+    struct pollfd recvFd[1];
+    recvFd[0].fd = this->connectionDescriptor;
+    recvFd[0].events = POLLIN | POLLRDNORM | POLLRDBAND;
+
     while (running) {
+        if (poll(recvFd, 1, 500) <= 0) {
+            std::this_thread::sleep_for(50ms);
+            continue;
+        }
+
         int receivedLength = recv(this->connectionDescriptor, buffer, 1024, recvFlags);
         // If there is an error on socket close connection
         if (receivedLength == 0 || receivedLength == -1) {
