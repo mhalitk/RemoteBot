@@ -33,6 +33,7 @@ add_executable(client ${CLIENT_SRC})
 # Test
 
 add_source(TEST_SRC test/test.cpp)
+add_source(TEST_SRC test/EventEmitterTest.cpp)
 
 add_executable(test ${TEST_SRC})
 target_link_libraries(test gtest)
