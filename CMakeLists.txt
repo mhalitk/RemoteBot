@@ -6,7 +6,7 @@ macro (add_source to source)
     set (${to} ${${to}} ${source})
 endmacro()
 
-set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -std=c++14)
+set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -std=c++11)
 
 include_directories(include)
 include_directories(src)

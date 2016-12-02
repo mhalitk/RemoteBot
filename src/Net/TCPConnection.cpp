@@ -58,7 +58,7 @@ void TCPConnection::startSending() {
 
     while (running) {
         if (sendingQueue.size() == 0) {
-            std::this_thread::sleep_for(50ms);
+            std::this_thread::sleep_for(std::chrono::milliseconds(50));
             continue;
         }
 
@@ -85,7 +85,7 @@ void TCPConnection::startReceiving() {
 
     while (running) {
         if (poll(recvFd, 1, 500) <= 0) {
-            std::this_thread::sleep_for(50ms);
+            std::this_thread::sleep_for(std::chrono::milliseconds(50));
             continue;
         }
 
