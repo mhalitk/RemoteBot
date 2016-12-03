@@ -41,4 +41,8 @@ matrix:
 
 before_install:
     - sudo apt-get update -qq
-script: ./build.sh
+script:
+    - mkdir build
+    - cd build
+    - cmake -DCMAKE_CXX_COMPILER=$COMPILER ..
+    - make -j 8
