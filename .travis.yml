@@ -47,7 +47,7 @@ install:
     - mkdir -p ${LIBS_DIR}
     - wget https://github.com/google/googletest/archive/release-1.8.0.tar.gz -O /tmp/googletest.tar.gz
     - tar -xvf /tmp/googletest.tar.gz
-    - cd googletest/googletest && mkdir build && cd build
+    - cd googletest-release-1.8.0/googletest && mkdir build && cd build
     - cmake -DCMAKE_CXX_COMPILER=$COMPILER .. && make
     - cp libgtest.a ${LIBS_DIR}
 
