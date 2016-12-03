@@ -54,5 +54,4 @@ install:
 script:
     - mkdir build
     - cd build
-    - cmake -DCMAKE_CXX_COMPILER=$COMPILER ..
-    - make -j 8
+    - cmake -DCMAKE_CXX_COMPILER=$COMPILER .. && make
