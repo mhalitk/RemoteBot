@@ -7,6 +7,7 @@ macro (add_source to source)
 endmacro()
 
 set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -std=c++11)
+set(CMAKE_LDFLAGS ${CMAKE_LDFLAGS} -lpthread)
 
 include_directories(include)
 include_directories(src)
