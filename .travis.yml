@@ -41,6 +41,16 @@ matrix:
 
 before_install:
     - sudo apt-get update -qq
+
+install:
+    - LIBS_DIR="${TRAVIS_BUILD_DIR}/libs"
+    - mkdir -p ${LIBS_DIR}
+    - wget https://github.com/google/googletest/archive/release-1.8.0.tar.gz -O /tmp/googletest.tar.gz
+    - tar -xvf /tmp/googletest.tar.gz
+    - cd googletest/googletest && mkdir build && cd build
+    - cmake -DCMAKE_CXX_COMPILER=$COMPILER .. && make
+    - cp libgtest.a ${LIBS_DIR}
+
 script:
     - mkdir build
     - cd build

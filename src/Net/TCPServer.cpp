@@ -17,7 +17,7 @@ void *get_in_addr(struct sockaddr *sa)
 }
 
 TCPServer::TCPServer(string port) : port(port) {
-    memset(&hints, 0, sizeof hints);
+    std::memset(&hints, 0, sizeof hints);
     hints.ai_family = AF_UNSPEC;
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_flags = AI_PASSIVE;
