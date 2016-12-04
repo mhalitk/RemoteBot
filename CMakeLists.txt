@@ -6,8 +6,11 @@ macro (add_source to source)
     set (${to} ${${to}} ${source})
 endmacro()
 
-set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -std=c++11)
-set(CMAKE_LDFLAGS ${CMAKE_LDFLAGS} -lpthread)
+set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-std=c++11")
+
+if (${CMAKE_SYSTEM_NAME} MATCHES Linux)
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
+endif (${CMAKE_SYSTEM_NAME} MATCHES Linux)
 
 include_directories(include)
 include_directories(src)
