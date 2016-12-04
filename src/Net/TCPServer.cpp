@@ -1,4 +1,5 @@
 #include <arpa/inet.h>
+#include <cstring>
 #include <exception>
 #include <unistd.h>
 
