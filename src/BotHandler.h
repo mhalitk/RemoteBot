@@ -32,7 +32,7 @@ private:
     EventEmitter<EventArgument> eventEmitter;
 
     int lastMessageId = 1;
-    json createMessage(std::string type, std::string command);
+    json createMessage(const std::string& type, const std::string& command);
     std::string name;
 };
 

@@ -4,7 +4,8 @@
 
 typedef std::string EventArgument;
 
-TEST(EventEmitterTest, CreateTest) {
+TEST(EventEmitterTest, CreateTest)
+{
     hlt::EventEmitter<EventArgument> eventEmitter;
     SUCCEED();
 }

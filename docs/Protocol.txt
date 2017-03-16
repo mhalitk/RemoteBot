@@ -1,0 +1,50 @@
+Bot welcome message:
+  Request (from server):
+    { 
+      "id": "messageId",
+      "message": "Welcome to RemoteBot Server!",
+    }
+
+Bot register request:
+  Request (from bot):
+    {
+      "id": "messageId",
+      "command": "register",
+      "data": {
+        "name": "Bot 1"
+      }
+    }
+  Response:
+    {
+      "id": "messageId",
+      "requestId": "requestMessageId",
+      "command": "register",
+      "success": true | false,
+      "data": {
+        "name": "Bot 1",
+        "id": "uniqueBotId",
+      },
+      "error": "Couldn't add you try in 5 minutes"
+    }
+
+Bot register request:
+  Request (from bot):
+    {
+      "id": "messageId",
+      "command": "register",
+      "data": {
+        "name": "Bot 1"
+      }
+    }
+  Response:
+    {
+      "id": "messageId",
+      "requestId": "requestMessageId",
+      "command": "register",
+      "success": true | false,
+      "data": {
+        "name": "Bot 1",
+        "id": "uniqueBotId",
+      },
+      "error": "Couldn't add you try in 5 minutes"
+    }

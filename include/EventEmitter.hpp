@@ -9,29 +9,37 @@
 namespace hlt {
 
 template<typename T>
-class EventEmitter {
+class EventEmitter
+{
 public:
     typedef std::function<void(const T&)> EventCallback;
 
     EventEmitter() {}
     
-    void on(std::string eventName, EventCallback callback) {
+    void on(std::string eventName, EventCallback callback)
+    {
         if (eventMap.find(eventName) == eventMap.end())
             eventMap[eventName] = std::make_shared<std::vector<EventCallback>>();
         eventMap[eventName]->push_back(callback); 
     }
 
-    void emit(std::string eventName, const T& eventArgument) {
-        try {
-            if (eventMap.find(eventName) != eventMap.end()) {
+    void emit(std::string eventName, const T& eventArgument)
+    {
+        try
+        {
+            if (eventMap.find(eventName) != eventMap.end())
+            {
                 std::shared_ptr<std::vector<EventCallback>> callbacks = eventMap[eventName];
                 for (auto callback = callbacks->begin();
                         callback != callbacks->end();
-                        callback++) {
+                        ++callback)
+                {
                     (*callback)(eventArgument);
                 }
             }
-        } catch (...) {
+        }
+        catch (...)
+        {
             // Do nothing
         }
     }

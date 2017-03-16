@@ -7,26 +7,27 @@ using namespace std;
 namespace hlt {
 
 BotHandler::BotHandler(TCPConnection::Ptr connection) :
-        connection(connection) {
+        connection(connection)
+{
     connection->getEventEmitter().on("message", std::bind(
                 &BotHandler::onMessage, this, std::placeholders::_1));
 
-    json getNameRequest = createMessage("request", "getName");
-    callbacks[getNameRequest["id"]] = [this](json response){
-            if (response["success"]) {
-                this->name = response["name"];
-                eventEmitter.emit("info", response);
-            }
-        };
+    json data;
+    data["message"] = "Welcome to RemoteBot Server!";
+    json getNameRequest = createMessage("info", "welcome");
+    getNameRequest["data"] = data;
+
     connection->sendMessage(getNameRequest.dump());
 }
 
-BotHandler::~BotHandler() {
+BotHandler::~BotHandler()
+{
     cout << "Destroying bot handler" << endl;
     cout << "TCPConnection use count: " << connection.use_count() << endl;
 }
 
-void BotHandler::onMessage(const TCPConnection::EventArgument& arg) {
+void BotHandler::onMessage(const TCPConnection::EventArgument& arg)
+{
     json message = json::parse(arg);
     if (message["type"] == "response" &&
             callbacks.find(message["request_id"]) != callbacks.end()) {
@@ -47,7 +48,7 @@ void BotHandler::close() {
     eventEmitter.clearAll();
 }
 
-json BotHandler::createMessage(std::string type, std::string command) {
+json BotHandler::createMessage(const std::string& type, const std::string& command) {
     json message;
     message["id"] = lastMessageId++;
     message["command"] = command;
